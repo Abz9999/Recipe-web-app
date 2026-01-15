@@ -1,0 +1,121 @@
+<div class="card recipe-card">
+    {% if request.user.is_authenticated %}
+        {% if is_favourite %}
+            <a href="{% url 'unfavourite_recipe' recipe_obj.id %}" 
+               class="favourite-heart-btn btn btn-danger"
+               title="Remove from favourites">
+                <i class="bi bi-heart-fill"></i>
+            </a>
+        {% else %}
+            <a href="{% url 'favourite_recipe' recipe_obj.id %}" 
+               class="favourite-heart-btn btn btn-outline-light"
+               title="Add to favourites">
+                <i class="bi bi-heart"></i>
+            </a>
+        {% endif %}
+    {% endif %}
+    
+    {% if recipe_obj.image %}
+        <img src="{{ recipe_obj.image.url }}" 
+             class="card-img-top recipe-card-image"
+             alt="{{ recipe_obj.recipe_name }}">
+    {% else %}
+        <div class="recipe-card-placeholder">
+            <i class="bi bi-image text-muted"></i>
+        </div>
+    {% endif %}
+    
+    <div class="card-body d-flex flex-column p-2">
+        <h6 class="card-title mb-1">{{ recipe_obj.recipe_name }}</h6>
+        
+        {% if recipe_obj.author %}
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <a href="{% url 'user_profile' recipe_obj.author.id %}" 
+                   class="recipe-author-link text-decoration-none small">
+                    <i class="bi bi-person-circle me-1"></i>{{ recipe_obj.author.full_name }}
+                </a>
+                <small class="text-muted"><i class="bi bi-calendar me-1"></i>{{ recipe_obj.publication_date|date:"d M Y" }}</small>
+            </div>
+        {% endif %}
+        
+        <p class="card-text text-muted small mb-2">{{ recipe_obj.description|truncatechars:60 }}</p>
+        
+        <div class="recipe-stats mb-2">
+            <div class="d-flex justify-content-between mb-1">
+                <small class="fw-bold">Rating</small>
+                <small class="fw-bold">Difficulty</small>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span class="text-warning">
+                    {% if stars_data %}
+                        {% for star in stars_data %}
+                            {% if star == 'full' %}<i class="bi bi-star-fill"></i>{% elif star == 'half' %}<i class="bi bi-star-half"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% with rating=recipe_obj.average_rating %}
+                            {% if rating %}
+                                {% if rating >= 1 %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                                {% if rating >= 2 %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                                {% if rating >= 3 %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                                {% if rating >= 4 %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                                {% if rating >= 5 %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                            {% else %}
+                                <span class="text-muted small">No ratings</span>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </span>
+                <span class="text-danger">
+                    <i class="bi bi-fire"></i> {{ recipe_obj.difficulty }}/5
+                </span>
+            </div>
+        </div>
+        
+        <div class="recipe-actions mt-auto">
+            {% if request.user == recipe_obj.author %}
+                <a href="{% url 'recipe' recipe_id=recipe_obj.id %}" class="btn btn-sm btn-danger flex-grow-1">
+                    View Recipe
+                </a>
+                <a href="{% url 'edit_recipe' recipe_id=recipe_obj.id %}" 
+                   class="btn btn-sm btn-outline-secondary" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
+                        data-bs-toggle="modal" data-bs-target="#deleteModal{{ recipe_obj.id }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            {% else %}
+                <a href="{% url 'recipe' recipe_id=recipe_obj.id %}" class="btn btn-sm btn-danger w-100">
+                    View Recipe
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if request.user == recipe_obj.author %}
+<div class="modal fade" id="deleteModal{{ recipe_obj.id }}" tabindex="-1"
+     aria-labelledby="deleteModalLabel{{ recipe_obj.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel{{ recipe_obj.id }}">Delete Recipe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>{{ recipe_obj.recipe_name }}</strong>?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'delete_recipe' recipe_id=recipe_obj.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

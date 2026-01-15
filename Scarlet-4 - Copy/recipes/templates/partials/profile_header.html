@@ -1,0 +1,56 @@
+<!-- Profile Header with Stats -->
+<div class="card shadow-sm mb-3 mb-md-4">
+    <div class="card-body text-center p-3 p-md-4">
+        <img src="{{ profile_user.gravatar }}" 
+             class="rounded-circle shadow mb-3 profile-image-fixed" 
+             width="80" height="80"
+             alt="{{ profile_user.username }} avatar">
+        
+        <!-- Hide on mobile if too long -->
+        <h4 class="mb-1 d-none d-md-block">{{ profile_user.full_name }}</h4>
+        <h5 class="mb-1 d-md-none">{{ profile_user.full_name|truncatechars:20 }}</h5>
+        
+        <p class="text-muted mb-2 mb-md-3">{{ profile_user.username|truncatechars:15 }}</p>
+        
+        <!-- Responsive button -->
+        {% if is_own_profile %}
+            <a href="{% url 'profile' %}" class="btn btn-danger w-30 h-30 w-md-auto">
+                Edit Profile
+            </a>
+        {% else %}
+            {% if is_following %}
+                <a href="{% url 'unfollow_user' profile_user.id %}" 
+                   class="btn btn-outline-danger w-30 w-md-auto">
+                    Unfollow
+                </a>
+            {% else %}
+                <a href="{% url 'follow_user' profile_user.id %}" 
+                   class="btn btn-danger w-30 w-md-auto">
+                    Follow
+                </a>
+            {% endif %}
+        {% endif %}
+        
+        <!-- Responsive stats row -->
+        <div class="row text-center mt-3 mt-md-4">
+            <div class="col-4">
+                <div class="border rounded p-2 p-md-3">
+                    <h5 class="text-danger mb-0 mb-md-1">{{ recipes_count }}</h5>
+                    <small class="text-muted">Recipes</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="border rounded p-2 p-md-3">
+                    <h5 class="text-danger mb-0 mb-md-1">{{ followers_count }}</h5>
+                    <small class="text-muted">Followers</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="border rounded p-2 p-md-3">
+                    <h5 class="text-danger mb-0 mb-md-1">{{ following_count }}</h5>
+                    <small class="text-muted">Following</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

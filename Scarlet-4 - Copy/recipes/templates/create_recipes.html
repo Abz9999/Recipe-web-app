@@ -1,0 +1,71 @@
+{% extends 'base_content.html' %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0 text-center">
+                        <i class="bi bi-plus-circle me-2"></i>Create Recipe
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next }}">
+
+                        <!-- Recipe Information -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-4 text-dark">
+                                <i class="bi bi-file-text me-2 text-danger"></i>Recipe Information
+                            </h5>
+                            {% include 'partials/bootstrap_form.html' with form=form exclude_fields="cuisine_tags,dietary_tags,instructions" %}
+                        </div>
+
+                        <!-- Tags Section -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-4 text-dark">
+                                <i class="bi bi-tags me-2 text-danger"></i>Tags
+                            </h5>
+                            {% include 'partials/tags_card.html' %}
+                        </div>
+
+                            <!-- Ingredients Section -->
+                            <div class="mb-5">
+                                <h5 class="fw-bold mb-4 text-dark">
+                                    <i class="bi bi-basket me-2 text-danger"></i>Ingredients<span class="text-danger ms-1">*</span>
+                                </h5>
+                                {% include 'partials/ingredients_card.html' with ingredients=ingredients %}
+                            </div>
+
+                        <!-- Instructions Section -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-4 text-dark">
+                                <i class="bi bi-list-ol me-2 text-danger"></i>Instructions<span class="text-danger ms-1">*</span>
+                            </h5>
+                            {% include 'partials/instructions_card.html' %}
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="border-top pt-4 mt-4">
+                            <div class="d-flex justify-content-center gap-3">
+                                <button type="submit" class="btn btn-danger btn-lg px-5">
+                                    <i class="bi bi-check-circle me-2"></i>Create Recipe
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

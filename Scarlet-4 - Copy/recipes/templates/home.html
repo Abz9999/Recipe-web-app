@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container mt-5 min-vh-100 d-flex align-items-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+            <div class="card cover-card shadow-sm rounded-4">
+                <div class="card-body p-5 text-center">
+                    <h1 class="cover-heading mb-2">Recipify</h1>
+                    <p class="cover-text text-muted mb-4">
+                        A recipe sharing app by Team <i>Scarlet 4</i>
+                    </p>
+                    <p>
+                        <a href="{% url 'sign_up' %}" class="btn btn-danger w-100 py-2">
+                            Sign up
+                        </a>
+                    </p>
+                    <p>
+                        <a href="{% url 'log_in' %}" class="btn btn-outline-danger w-100 py-2">
+                            Log in
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

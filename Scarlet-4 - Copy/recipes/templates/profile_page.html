@@ -1,0 +1,210 @@
+{% extends 'base_content.html' %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-3 col-md-3 mb-3 mb-md-0">
+            <div class="profile-sidebar">
+                <div class="nav flex-column nav-pills">
+                    <a class="nav-link mb-1 mb-md-2 p-2 p-md-3{% if selected_tab == 'account' or not selected_tab %} active{% endif %}" 
+                    href="?tab=account">
+                        <i class="bi bi-person me-md-2"></i>
+                        <span class="d-none d-md-inline">Account</span>
+                    </a>
+                    <a class="nav-link mb-1 mb-md-2 p-2 p-md-3{% if selected_tab == 'recipes' %} active{% endif %}" 
+                    href="?tab=recipes">
+                        <i class="bi bi-journal-text me-md-2"></i>
+                        <span class="d-none d-md-inline">Recipes</span>
+                    </a>
+                    <a class="nav-link mb-1 mb-md-2 p-2 p-md-3{% if selected_tab == 'favourites' %} active{% endif %}" 
+                    href="?tab=favourites">
+                        <i class="bi bi-heart me-md-2"></i>
+                        <span class="d-none d-md-inline">Favourites</span>
+                    </a>
+                    <a class="nav-link mb-1 mb-md-2 p-2 p-md-3{% if selected_tab == 'followers' %} active{% endif %}" 
+                    href="?tab=followers">
+                        <i class="bi bi-people me-md-2"></i>
+                        <span class="d-none d-md-inline">Followers</span>
+                    </a>
+                    <a class="nav-link mb-1 mb-md-2 p-2 p-md-3{% if selected_tab == 'following' %} active{% endif %}" 
+                    href="?tab=following">
+                        <i class="bi bi-person-check me-md-2"></i>
+                        <span class="d-none d-md-inline">Following</span>
+                    </a>
+                </div>
+            </div>    
+        </div>
+        <div class="col-9 col-md-9">
+            <div class="tab-content">
+                <!-- Account Tab -->
+                <div class="{% if selected_tab == 'account' or not selected_tab %}show active{% else %}d-none{% endif %}" id="account">
+                    {% include 'partials/profile_header.html' with is_own_profile=True %}
+                </div>
+                <!-- Recipes Tab -->
+                <div class="{% if selected_tab == 'recipes' %}show active{% else %}d-none{% endif %}" id="recipes">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="card-title mb-0">My Recipes ({{ recipes_count }})</h5>
+                                <a href="{% url 'create_recipe' %}"
+                                   class="btn btn-outline-danger">
+                                    <i class="bi bi-plus-circle me-1"></i>Create Recipe
+                                </a>
+                            </div>
+                            
+                            {% if user_recipes %}
+                                <div class="welcome-recipe-grid row g-4">
+                                    {% for item in recipes_with_fav %}
+                                    <div class="col-12 col-sm-6 col-md-4">
+                                        {% with recipe=item.recipe is_favourite=item.is_favourite %}
+                                            {% include 'partials/recipe_card.html' %}
+                                        {% endwith %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                 <!-- Recipes Pagination -->
+                                {% if recipes_page_obj.paginator.num_pages > 1 %}
+                                {% with page_obj=recipes_page_obj tab_name="recipes" page_param="recipes_page" anchor="#recipes" %}
+                                    {% include 'partials/pagination.html' with aria_label="Recipes pagination" %}
+                                {% endwith %}
+                                {% endif %}
+                            {% else %}
+                                <div class="profile-empty-state">
+                                    <div class="mb-4">
+                                        <i class="bi bi-journal-text icon-large"></i>
+                                    </div>
+                                    <h5 class="mb-3">No recipes yet</h5>
+                                    <p class="mb-4">Create your first recipe to share with the community!</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                               
+                <!-- Favourites Tab -->
+                <div class="{% if selected_tab == 'favourites' %}show active{% else %}d-none{% endif %}" id="favourites">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="card-title mb-0">Favourites ({{ favourites_count|default:0 }})</h5>
+                                {% if favourites_count > 0 %}
+                                <button class="btn btn-outline-danger btn-sm" id="clearFavoritesBtn">
+                                    <i class="bi bi-trash"></i> Clear All
+                                </button>
+                                {% endif %}
+                            </div>
+                            
+                            {% if favourites %}
+                                <div class="welcome-recipe-grid row g-4">
+                                    {% for recipe in favourites_page_obj %}
+                                    <div class="col-12 col-sm-6 col-md-4">
+                                        {% include 'partials/recipe_card.html' with is_favourite=True %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <!-- Favourites Pagination -->
+                                {% if favourites_page_obj.paginator.num_pages > 1 %}
+                                {% with page_obj=favourites_page_obj tab_name="favourites" page_param="favourites_page" anchor="#favourites" %}
+                                    {% include 'partials/pagination.html' with aria_label="Favourites pagination" %}
+                                {% endwith %}
+                                {% endif %}
+                            {% else %}
+                                <div class="profile-empty-state">
+                                    <div class="mb-4">
+                                        <i class="bi bi-heart icon-large"></i>
+                                    </div>
+                                    <h5 class="mb-3">No favourite recipes yet</h5>
+                                    <p class="mb-4">Save recipes you love by clicking the heart icon!</p>
+                                    <a href="{% url 'welcome' %}" class="btn btn-outline-danger">
+                                        <i class="bi bi-search me-1"></i>Browse Recipes
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Followers Tab -->
+                <div class="{% if selected_tab == 'followers' %}show active{% else %}d-none{% endif %}" id="followers">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Followers ({{ followers_count }})</h5>
+                            
+                            {% if followers %}
+                                <div class="list-group">
+                                    {% for follower in followers %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ follower.gravatar }}" 
+                                                class="rounded-circle me-2 me-md-3" 
+                                                width="40" height="40"
+                                                alt="{{ follower.username }} avatar">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">{{ follower.full_name }}</h6>
+                                                <small class="text-muted">{{ follower.username }}</small>
+                                            </div>
+                                            <a href="{% url 'user_profile' follower.id %}" 
+                                               class="btn btn-outline-danger btn-sm mt-2 mt-md-0">
+                                                View Profile
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4 py-md-5">
+                                    <p class="text-muted">No followers yet</p>
+                                    <small class="text-muted">When people follow you, they'll appear here</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Following Tab -->
+                <div class="{% if selected_tab == 'following' %}show active{% else %}d-none{% endif %}" id="following">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Following ({{ following_count }})</h5>
+                            
+                            {% if following %}
+                                <div class="list-group">
+                                    {% for followed_user in following %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ followed_user.gravatar }}" 
+                                                class="rounded-circle me-2 me-md-3" 
+                                                width="40" height="40"
+                                                alt="{{ followed_user.username }} avatar">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">{{ followed_user.full_name }}</h6>
+                                                <small class="text-muted">{{ followed_user.username }}</small>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <a href="{% url 'user_profile' followed_user.id %}" 
+                                                   class="btn btn-outline-danger btn-sm mt-2 mt-md-0">
+                                                    View Profile
+                                                </a>
+                                                <a href="{% url 'unfollow_user' followed_user.id %}" 
+                                                   class="btn btn-outline-danger btn-sm mt-2 mt-md-0">
+                                                    Unfollow
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4 py-md-5">
+                                    <p class="text-muted">Not following anyone yet</p>
+                                    <small class="text-muted">Find people to follow to see their recipes</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

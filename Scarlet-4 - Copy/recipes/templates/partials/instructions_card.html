@@ -1,0 +1,59 @@
+<div class="card border shadow-sm">
+    <div class="card-body">
+        {% if instruction_error %}
+            <div class="invalid-feedback d-block mb-3">
+                {{ instruction_error }}
+            </div>
+        {% endif %}
+        <div class="scrollable-container">
+            {% for step in instruction_steps %}
+            <div class="instruction-row row mb-3 g-2">
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    <span class="fw-bold text-muted">{{ forloop.counter }}</span>
+                </div>
+                <div class="col-10 d-flex align-items-center">
+                    <input type="text"
+                           name="instruction_step_{{ forloop.counter0 }}"
+                           class="form-control"
+                           value="{{ step }}"
+                           placeholder="Enter instruction step">
+                </div>
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    {% if not forloop.first %}
+                    <button type="submit"
+                            name="delete_instruction_{{ forloop.counter0 }}"
+                            value="true"
+                            class="btn btn-outline-danger btn-sm"
+                            formnovalidate>
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    {% else %}
+                    <div class="spacer-32"></div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="instruction-row row mb-3 g-2">
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    <span class="fw-bold text-muted">1</span>
+                </div>
+                <div class="col-10 d-flex align-items-center">
+                    <input type="text"
+                           name="instruction_step_0"
+                           class="form-control"
+                           value=""
+                           placeholder="Enter instruction step">
+                </div>
+                <div class="col-1 d-flex align-items-center justify-content-center">
+                    <div class="spacer-32"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-3 pt-3 border-top">
+            <button type="submit" name="add_instruction" value="true" class="btn btn-outline-danger w-100" formnovalidate>
+                <i class="bi bi-plus-circle me-2"></i>Add Instruction Step
+            </button>
+        </div>
+    </div>
+</div>

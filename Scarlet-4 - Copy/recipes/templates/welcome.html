@@ -1,0 +1,111 @@
+{% extends 'base_content.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2>Welcome to Recipify, {{ request.user.first_name }} {{ request.user.last_name }}!</h2>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3 text-center">
+            <h4>What would you like to cook today?</h4>
+            <form method="GET" action="{% url 'welcome' %}">
+                <div class="input-group">
+                    <input type="text"
+                           name="q"
+                           class="form-control"
+                           placeholder="Search recipes by title, ingredients, author, description..."
+                           value="{{ request.GET.q }}">
+                    <button type="submit" class="btn btn-danger">Get Recipe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+            <form method="GET" action="{% url 'welcome' %}">
+                {% if request.GET.q %}
+                <input type="hidden" name="q" value="{{ request.GET.q }}">
+                {% endif %}
+                {% if request.GET.sort %}
+                <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+                {% endif %}
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ cuisine_tag_form.cuisine_tags.id_for_label }}" class="form-label fw-semibold">
+                                Cuisine Tags
+                            </label>
+                            <input type="text"
+                                   name="cuisine_tags"
+                                   id="{{ cuisine_tag_form.cuisine_tags.id_for_label }}"
+                                   class="form-control"
+                                   value="{{ request.GET.cuisine_tags }}"
+                                   placeholder="e.g., Italian, Mexican, Thai">
+                            <small class="form-text text-muted">Enter tags separated by commas</small>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ dietary_tag_form.dietary_tags.id_for_label }}" class="form-label fw-semibold">
+                                Dietary Tags
+                            </label>
+                            <input type="text"
+                                   name="dietary_tags"
+                                   id="{{ dietary_tag_form.dietary_tags.id_for_label }}"
+                                   class="form-control"
+                                   value="{{ request.GET.dietary_tags }}"
+                                   placeholder="e.g., Vegan, Vegetarian, Gluten-Free">
+                            <small class="form-text text-muted">Enter tags separated by commas</small>
+                        </div>
+                    </div>
+                </div>
+                {% if request.user.is_authenticated %}
+                <div class="mb-3">
+                    <div class="form-check d-flex justify-content-center">
+                        <input class="form-check-input" type="checkbox" name="filter" value="following" id="filterFollowing" {% if request.GET.filter == 'following' %}checked{% endif %}>
+                        <label class="form-check-label ms-2" for="filterFollowing">
+                            Show recipes from followed users only
+                        </label>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="text-center">
+                    <button type="submit" class="btn btn-danger btn-sm">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-start align-items-center flex-wrap gap-2 mb-4">
+        <span class="me-2 text-muted small">Sort by:</span>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.filter %}filter={{ request.GET.filter }}&{% endif %}{% if request.GET.cuisine_tags %}cuisine_tags={{ request.GET.cuisine_tags|urlencode }}&{% endif %}{% if request.GET.dietary_tags %}dietary_tags={{ request.GET.dietary_tags|urlencode }}&{% endif %}sort=highest"
+           class="btn btn-sm {% if request.GET.sort == 'highest' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+            Highest Rated
+        </a>
+        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.filter %}filter={{ request.GET.filter }}&{% endif %}{% if request.GET.cuisine_tags %}cuisine_tags={{ request.GET.cuisine_tags|urlencode }}&{% endif %}{% if request.GET.dietary_tags %}dietary_tags={{ request.GET.dietary_tags|urlencode }}&{% endif %}sort=lowest"
+           class="btn btn-sm {% if request.GET.sort == 'lowest' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+            Lowest Rated
+        </a>
+        <a href="{% url 'welcome' %}" class="btn btn-outline-secondary btn-sm ms-2">Reset All</a>
+    </div>
+
+    <div class="welcome-recipe-grid row g-4">
+        {% for item in page_obj %}
+        <div class="col-12 col-sm-6 col-md-3">
+            {% include 'partials/recipe_card.html' %}
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">No recipes found, please feel free to create some recipes!</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    {% include 'partials/pagination.html' with page_url_prefix=page_url_prefix page_url_suffix="" aria_label="Recipes pagination" %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base_content.html' %}
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h3 class="text-center mb-4">Edit profile</h3>
+          <form action="{% url 'profile' %}" method="post">
+            {% csrf_token %}
+            {% include 'partials/bootstrap_form.html' with form=form %}
+            <button type="submit" class="btn btn-danger w-100">
+              Update
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

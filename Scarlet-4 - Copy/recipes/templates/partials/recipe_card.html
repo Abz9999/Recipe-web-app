@@ -1,0 +1,9 @@
+{% if item %}
+    {% with recipe_obj=item.recipe stars_data=item.stars avg_rating_data=item.avg fav_status=item.is_favourite %}
+        {% include 'partials/recipe_card_content.html' with is_favourite=fav_status %}
+    {% endwith %}
+{% else %}
+    {% with recipe_obj=recipe stars_data=stars avg_rating_data=avg_rating %}
+        {% include 'partials/recipe_card_content.html' with is_favourite=is_favourite %}
+    {% endwith %}
+{% endif %}

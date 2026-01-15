@@ -1,0 +1,63 @@
+{% extends 'base_content.html' %}
+{% block content %}
+<div class="container my-5">
+    
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    {% include 'partials/profile_header.html' with is_own_profile=False %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User's Recipes Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1">{{ profile_user.first_name }}'s Recipes</h3>
+                    <p class="text-muted mb-0">{{ recipes_count }} recipe{{ recipes_count|pluralize }}</p>
+                </div>
+            </div>
+
+            {% if user_recipes %}
+                <div class="welcome-recipe-grid row g-4">
+                    {% for item in recipes_with_fav %}
+                    <div class="col-12 col-sm-6 col-md-3">
+                        {% with recipe=item.recipe is_favourite=item.is_favourite %}
+                            {% include 'partials/recipe_card.html' %}
+                        {% endwith %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                    {% include 'partials/pagination.html' with aria_label="Recipes pagination" %}
+                {% endif %}
+                
+            {% else %}
+                <!-- Empty State -->
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-5 py-md-6">
+                        <div class="mb-4">
+                            <i class="bi bi-journal-text display-1 text-muted opacity-25"></i>
+                        </div>
+                        <h4 class="mb-3">No Recipes Yet</h4>
+                        <p class="text-muted mb-4 max-width-500 mx-auto">
+                            {{ profile_user.first_name }} hasn't shared any recipes with the community yet.
+                        </p>
+                        <a href="{% url 'welcome' %}" class="btn btn-outline-danger">
+                            <i class="bi bi-search me-2"></i>
+                            Browse Other Recipes
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
