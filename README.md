@@ -18,6 +18,7 @@ This repository is a personal mirror created for portfolio and demonstration pur
 - Designed and built tag functionality to support content categorisation and filtering
 - Developed search functionality on the welcome page to enable efficient querying and content discovery
 - Contributed to front-end implementation using Bootstrap, improving layout consistency and usability
+- Contributed to writing and maintaining automated tests to verify core functionality and prevent regressions
 
 
 ## Project structure
@@ -64,4 +65,5 @@ $ python3 manage.py test
 The packages used by this application are specified in `requirements.txt`
 
 AI was used for for generating foods in the seed.py, as well as debugging CSS.
+
 We approximate less than 30% of the two mentioned files contents are AI-generated.
